@@ -22,7 +22,7 @@
 | | |
 |---|---|
 | Current pack | `protocol-28/` — Active |
-| Distribution | No release or tag mechanism — consumed as a git checkout (`actions/checkout` with `repository: StellarCanary/ProtocolCanary-Fixtures`, or a plain `git clone`), pointed at with `--fixtures-dir`. |
+| Distribution | The `protocol-28/` pack is published as a tagged snapshot and [GitHub Release](https://github.com/StellarCanary/ProtocolCanary-Fixtures/releases/tag/protocol-28) — tag `protocol-28`, commit `75ec2c293a44f09d9c8c1f76722a24a2334ac20a` — the immutable, verified Protocol 28 fixture pack. It is not a compiled or binary artifact: consumers still use a git checkout/clone (`actions/checkout` with `repository: StellarCanary/ProtocolCanary-Fixtures`, or a plain `git clone`, optionally at the `protocol-28` tag/ref) and point `--fixtures-dir` at the resulting declarative TOML fixture corpus. |
 | Other packs | `protocol-27/` exists but is **not yet populated** — fixtures are added only after their upstream behavior is independently verified, never as placeholders. |
 
 ## Version compatibility
@@ -44,7 +44,7 @@ table verifies against.
 |---|---|---|---|
 | `Protocol-Canary` | Yes (`v0.1.0`, `v0.1.1`) | Yes (`v0.1.1`) | No |
 | `ProtocolCanary-Action` | Yes (`v0.1.1`, `v1`) | Yes | N/A (a JS action; its "binary" is the committed `dist/index.js`) |
-| `ProtocolCanary-Fixtures` | No | No | N/A (not a distributable binary) |
+| `ProtocolCanary-Fixtures` | Yes (`protocol-28`) | Yes (`protocol-28`) | N/A (not a distributable binary) |
 
 Do not assume a `Protocol-Canary` binary download exists anywhere — every
 documented install path in [Installation](./installation.md) builds from
