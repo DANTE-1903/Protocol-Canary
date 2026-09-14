@@ -6,7 +6,7 @@
 |---|---|
 | Current version | `v0.1.1` |
 | Distribution | A git tag (`v0.1.1`), installed via `cargo install --git ... --tag v0.1.1 --locked`. |
-| GitHub Release | **None published.** Only tags (`v0.1.0`, `v0.1.1`) exist — there is no prebuilt binary and no checksum artifact. If this changes, this page and [Installation](./installation.md) will be updated to reflect it. |
+| GitHub Release | [`v0.1.1`](https://github.com/StellarCanary/Protocol-Canary/releases/tag/v0.1.1) is published (target commit `919668859bc1bef3d58737f13695b486d67632ea`). It carries no prebuilt binary and no checksum artifact — installation still builds from source via the tag, exactly as before. If prebuilt binaries are ever added, this page and [Installation](./installation.md) will be updated to reflect it. |
 | What changed in `0.1.1` | `canary-xdr` gained support for the `"ContractExecutable"` XDR type (previously only `"StellarValue"`), needed to test CAP-0085's `CONTRACT_EXECUTABLE_EXTERNAL_REF` case. |
 
 ## ProtocolCanary-Action
@@ -42,7 +42,7 @@ table verifies against.
 
 | | Git tags | GitHub Releases | Prebuilt binaries |
 |---|---|---|---|
-| `Protocol-Canary` | Yes (`v0.1.0`, `v0.1.1`) | No | No |
+| `Protocol-Canary` | Yes (`v0.1.0`, `v0.1.1`) | Yes (`v0.1.1`) | No |
 | `ProtocolCanary-Action` | Yes (`v0.1.1`, `v1`) | Yes | N/A (a JS action; its "binary" is the committed `dist/index.js`) |
 | `ProtocolCanary-Fixtures` | No | No | N/A (not a distributable binary) |
 
