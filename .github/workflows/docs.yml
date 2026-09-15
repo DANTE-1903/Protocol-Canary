@@ -50,7 +50,7 @@ jobs:
 
       - name: Upload built site (pull requests only, for inspection)
         if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: docs-site-preview
           path: docs-site/book/
@@ -58,7 +58,7 @@ jobs:
 
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: docs-site/book/
 
