@@ -37,14 +37,22 @@ fn run_xdr(fixtures: &[XdrFixture], context: &ExecutionContext) -> Vec<Compatibi
     fixtures
         .iter()
         .map(|fixture| {
-            runner.run(fixture, context).unwrap_or_else(|e| {
+            let cache_key = cache_key(context, &fixture.metadata.id);
+            if let Some(cached) = context.cache.get(&cache_key) {
+                return cached;
+            }
+
+            let result = runner.run(fixture, context).unwrap_or_else(|e| {
                 error_result(
                     &fixture.metadata.id,
                     fixture.metadata.protocol,
                     Surface::Xdr,
                     &e.to_string(),
                 )
-            })
+            });
+
+            let _ = context.cache.put(&cache_key, &result);
+            result
         })
         .collect()
 }
@@ -61,6 +69,11 @@ async fn run_rpc(
         .map(|(index, fixture)| {
             let runner = &runner;
             async move {
+                let cache_key = cache_key(context, &fixture.metadata.id);
+                if let Some(cached) = context.cache.get(&cache_key) {
+                    return (index, cached);
+                }
+
                 let result = runner.run(fixture, context).await.unwrap_or_else(|e| {
                     error_result(
                         &fixture.metadata.id,
@@ -69,6 +82,7 @@ async fn run_rpc(
                         &e.to_string(),
                     )
                 });
+                let _ = context.cache.put(&cache_key, &result);
                 (index, result)
             }
         })
@@ -92,6 +106,11 @@ async fn run_soroban(
         .map(|(index, fixture)| {
             let runner = &runner;
             async move {
+                let cache_key = cache_key(context, &fixture.metadata.id);
+                if let Some(cached) = context.cache.get(&cache_key) {
+                    return (index, cached);
+                }
+
                 let result = runner.run(fixture, context).await.unwrap_or_else(|e| {
                     error_result(
                         &fixture.metadata.id,
@@ -100,6 +119,7 @@ async fn run_soroban(
                         &e.to_string(),
                     )
                 });
+                let _ = context.cache.put(&cache_key, &result);
                 (index, result)
             }
         })
@@ -126,6 +146,21 @@ fn error_result(
         details: Some(message.to_string()),
         duration_ms: 0,
         fixture_id: Some(fixture_id.to_string()),
+    }
+}
+
+fn cache_key(context: &ExecutionContext, fixture_id: &str) -> canary_core::CacheKey {
+    let project_fingerprint = match (&context.git.commit, context.git.is_dirty) {
+        (Some(commit), Some(true)) => format!("{}-dirty", commit),
+        (Some(commit), _) => commit.clone(),
+        (None, _) => context.project.name.clone(),
+    };
+    canary_core::CacheKey {
+        fixture_id: fixture_id.to_string(),
+        protocol: context.protocol,
+        project_fingerprint,
+        rpc_endpoint: context.network.rpc_url.clone(),
+        observed_protocol: context.network.observed_protocol,
     }
 }
 
