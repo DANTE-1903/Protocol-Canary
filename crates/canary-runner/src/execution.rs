@@ -37,7 +37,7 @@ fn run_xdr(fixtures: &[XdrFixture], context: &ExecutionContext) -> Vec<Compatibi
     fixtures
         .iter()
         .map(|fixture| {
-            let cache_key = crate::cache_key(context, &fixture.metadata.id);
+            let cache_key = cache_key(context, &fixture.metadata.id);
             if let Some(cached) = context.cache.get(&cache_key) {
                 return cached;
             }
