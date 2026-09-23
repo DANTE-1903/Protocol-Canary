@@ -67,9 +67,11 @@ pub struct CheckArgs {
     #[arg(long)]
     pub json: bool,
 
+    /// Include skip reasons in Markdown/terminal output and populate the JSON report's verbose field.
     #[arg(long)]
     pub verbose: bool,
 
+    /// Shorten terminal-format output to a single status line.
     #[arg(long)]
     pub quiet: bool,
 }

@@ -16,8 +16,8 @@ Options:
       --fixtures-dir <FIXTURES_DIR>  Directory containing fixture files [default: fixtures]
       --format <FORMAT>              Output format [default: terminal] [possible values: terminal, json, markdown]
       --json                         Shorthand for --format json
-      --verbose
-      --quiet
+      --verbose                      Include skip reasons in Markdown/terminal output and populate the JSON report's verbose field.
+      --quiet                        Shorten terminal-format output to a single status line.
   -h, --help                         Print help
 ```
 
@@ -43,6 +43,8 @@ zero fixtures (a trivial `0/0` pass), not an error. See [Fixtures](../fixtures-g
   [JSON Report](../json-report.md).
 - `--format markdown` — a Markdown table, suitable for a PR comment or job
   summary.
+
+> **Note on verbosity:** The `--quiet` flag only affects the `terminal` output format, condensing the output to a single `Status:` line instead of a full report. The `--verbose` flag affects the detail included: it adds skip reasons to both `markdown` and `terminal` outputs, and is passed through into the `json` report's `verbose` field.
 
 The report is printed to stdout **regardless of exit code**, including on
 a compatibility failure — a caller does not need to inspect stderr to get
