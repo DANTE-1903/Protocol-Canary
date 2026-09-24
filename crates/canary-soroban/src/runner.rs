@@ -499,4 +499,46 @@ mod tests {
             SorobanFixtureError::InvalidFixtureBody { .. }
         ));
     }
+
+    /// Parses a fixture whose single `[[args]]` entry has the given
+    /// `kind` and raw TOML `value`.
+    fn from_loaded_with_arg(
+        kind: &str,
+        value: &str,
+    ) -> Result<SorobanFixture, SorobanFixtureError> {
+        let toml = format!(
+            "id = \"bad-arg\"\nprotocol = 28\nsurface = \"soroban\"\ncategory = \"x\"\ndescription = \"x\"\nsource_account = \"{}\"\ncontract_id = \"{}\"\nfunction = \"f\"\nsequence_number = 1\n\n[[args]]\nkind = \"{kind}\"\nvalue = {value}\n\n[expect]\nkind = \"simulation-success\"\n",
+            StrkeyPublicKey([0u8; 32]),
+            StrkeyContract([0u8; 32]),
+        );
+        let loaded =
+            canary_fixtures::parse_fixture_str(&toml, std::path::Path::new("t.toml")).unwrap();
+        SorobanFixture::from_loaded(&loaded)
+    }
+
+    #[test]
+    fn rejects_a_negative_u32_arg() {
+        let err = from_loaded_with_arg("u32", "-1").unwrap_err();
+        assert!(matches!(
+            err,
+            SorobanFixtureError::InvalidFixtureBody { .. }
+        ));
+    }
+
+    #[test]
+    fn rejects_a_string_value_for_a_bool_arg() {
+        let err = from_loaded_with_arg("bool", "\"true\"").unwrap_err();
+        assert!(matches!(
+            err,
+            SorobanFixtureError::InvalidFixtureBody { .. }
+        ));
+    }
+
+    #[test]
+    fn rejects_an_unsupported_arg_kind_and_lists_the_supported_ones() {
+        let err = from_loaded_with_arg("map", "1").unwrap_err();
+        assert!(err.to_string().contains(
+            "expected one of \"bool\", \"u32\", \"i32\", \"u64\", \"i64\", \"symbol\", \"string\""
+        ));
+    }
 }
