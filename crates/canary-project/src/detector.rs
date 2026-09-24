@@ -174,4 +174,34 @@ mod tests {
             .capabilities
             .contains(&canary_core::Capability::WasmArtifact));
     }
+
+    #[test]
+    fn soroban_contract_outranks_rpc_client() {
+        use canary_core::Capability;
+        assert_eq!(
+            classify(&[Capability::RpcClient, Capability::SorobanContract], false),
+            ProjectType::Soroban
+        );
+    }
+
+    #[test]
+    fn rpc_client_outranks_stellar_sdk_dependency() {
+        use canary_core::Capability;
+        assert_eq!(
+            classify(
+                &[Capability::StellarSdkDependency, Capability::RpcClient],
+                false
+            ),
+            ProjectType::RpcConsumer
+        );
+    }
+
+    #[test]
+    fn stellar_sdk_dependency_outranks_stellar_toml() {
+        use canary_core::Capability;
+        assert_eq!(
+            classify(&[Capability::StellarSdkDependency], true),
+            ProjectType::StellarSdk
+        );
+    }
 }
