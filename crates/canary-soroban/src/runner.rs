@@ -436,6 +436,54 @@ mod tests {
         assert_eq!(result.status, Status::Pass);
     }
 
+    #[tokio::test]
+    async fn fails_when_simulation_unexpectedly_succeeds() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "jsonrpc": "2.0",
+                "id": 1,
+                "result": { "latestLedger": 1000, "transactionData": "AAAA" }
+            })))
+            .mount(&server)
+            .await;
+
+        let fixture =
+            SorobanFixture::from_loaded(&fixture("p28-soroban-4", "simulation-error", "")).unwrap();
+        let runner = DefaultSorobanRunner::new(HttpRpcClient::new(server.uri()));
+        let result = runner.run(&fixture, &context()).await.unwrap();
+        assert_eq!(result.status, Status::Fail);
+        assert_eq!(
+            result.summary,
+            "expected simulation to fail, but it succeeded"
+        );
+    }
+
+    #[tokio::test]
+    async fn fails_when_simulation_error_does_not_match_expected_substring() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "jsonrpc": "2.0",
+                "id": 1,
+                "result": { "latestLedger": 1000, "error": "Error(Budget, ExceededLimit)" }
+            })))
+            .mount(&server)
+            .await;
+
+        let fixture = SorobanFixture::from_loaded(&fixture(
+            "p28-soroban-5",
+            "simulation-error",
+            "message_contains = \"Contract\"\n",
+        ))
+        .unwrap();
+        let runner = DefaultSorobanRunner::new(HttpRpcClient::new(server.uri()));
+        let result = runner.run(&fixture, &context()).await.unwrap();
+        assert_eq!(result.status, Status::Fail);
+    }
+
     #[test]
     fn rejects_a_fixture_missing_the_expect_table() {
         let toml = format!(
