@@ -387,12 +387,12 @@ mod tests {
         let input_base64 = "AAAAAAAAAAI=";
         let expected_output = "AAAAAAAAAAA=";
 
-        let body = format!(
-            "type = \"ScVal\"\nkind = \"roundtrip\"\nvalue_base64 = \"{input_base64}\"\n"
-        );
-        let fixture = XdrFixture::from_loaded(&loaded_fixture("p28-xdr-roundtrip-fail", &body)).unwrap();
+        let body =
+            format!("type = \"ScVal\"\nkind = \"roundtrip\"\nvalue_base64 = \"{input_base64}\"\n");
+        let fixture =
+            XdrFixture::from_loaded(&loaded_fixture("p28-xdr-roundtrip-fail", &body)).unwrap();
         let result = DefaultXdrRunner.run(&fixture, &context()).unwrap();
-        
+
         assert_eq!(result.status, canary_core::Status::Fail);
         let details = result.details.expect("details should be present");
         assert!(details.contains(input_base64));
